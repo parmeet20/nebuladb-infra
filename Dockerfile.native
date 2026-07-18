@@ -27,7 +27,7 @@ RUN --mount=type=cache,target=/root/.m2/repository \
     cp /workspace/${MODULE_PARENT}/${MODULE_NAME}/target/${ARTIFACT_NAME} /artifact
 
 # ---------- Stage 2 : Runtime ----------
-FROM gcr.io/distroless/base-debian12
+FROM debian:12-slim
 
 WORKDIR /app
 
