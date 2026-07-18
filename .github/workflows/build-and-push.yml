@@ -10,7 +10,8 @@ on:
 env:
   REGISTRY: docker.io
   IMAGE_NAME_PREFIX: ${{ github.repository_owner }}
-  ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: "true"
+  # Enable Docker BuildKit so --mount=type=cache works in Dockerfile
+  DOCKER_BUILDKIT: "1"
 
 jobs:
   build-native:
@@ -58,14 +59,6 @@ jobs:
           ls -la
           test -f Dockerfile.native
 
-      - name: Cache Maven dependencies
-        uses: actions/cache@v4
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-m2-
-
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3.2.0
 
@@ -93,4 +86,3 @@ jobs:
             MODULE_PARENT=${{ matrix.module_parent }}
             MODULE_NAME=${{ matrix.module_name }}
             ARTIFACT_NAME=${{ matrix.artifact_name }}
-            MAVEN_OPTS=-Dmaven.repo.local=/root/.m2/repository
