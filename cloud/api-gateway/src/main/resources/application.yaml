@@ -1,0 +1,100 @@
+spring:
+  application:
+    name: ${SPRING_APPLICATION_NAME:api-gateway}
+
+  cloud:
+    gateway:
+      server:
+        webflux:
+          discovery:
+            locator:
+              enabled: ${GATEWAY_DISCOVERY_ENABLED:true}
+              lower-case-service-id: ${GATEWAY_LOWER_CASE_SERVICE_ID:true}
+          routes:
+            - id: nebula-auth
+              uri: lb://nebula-auth
+              predicates:
+                - Path=/api/v1/auth/**
+
+            - id: nebula-auth-short
+              uri: lb://nebula-auth
+              predicates:
+                - Path=/auth/**
+              filters:
+                - RewritePath=/auth/(?<segment>.*), /api/v1/auth/$\{segment}
+
+            - id: project-service-projects
+              uri: lb://project-service
+              predicates:
+                - Path=/api/v1/projects,/api/v1/projects/**
+              filters:
+                - JwtAuthenticationFilter
+
+            - id: project-service-infra
+              uri: lb://project-service
+              predicates:
+                - Path=/api/v1/infra-items,/api/v1/infra-items/**
+              filters:
+                - JwtAuthenticationFilter
+
+      loadbalancer:
+        ribbon:
+          enabled: ${GATEWAY_RIBBON_ENABLED:false}
+
+    discovery:
+      client:
+        health-indicator:
+          enabled: ${DISCOVERY_HEALTH_ENABLED:true}
+
+  main:
+    web-application-type: reactive
+
+jwt:
+  secret-key: ${JWT_SECRET_KEY:jdsfhudsifnucryewuibcrny8oiqewcruifehmdicohxoej9mucrwe89rn98ewnyrcm98en89nx8rehugfefy8y8herwofehfeoiufhseeeeydguc8oiudasioc}
+
+eureka:
+  instance:
+    hostname: ${EUREKA_INSTANCE_HOSTNAME:${HOSTNAME:localhost}}
+    prefer-ip-address: ${EUREKA_PREFER_IP:true}
+    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+  client:
+    register-with-eureka: ${EUREKA_REGISTER:true}
+    fetch-registry: ${EUREKA_FETCH:true}
+    service-url:
+      defaultZone: ${EUREKA_DEFAULT_ZONE:http://${EUREKA_HOSTNAME:localhost}:${EUREKA_PORT:8761}/eureka/}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: ${MANAGEMENT_ENDPOINTS:health,info,prometheus}
+      base-path: ${MANAGEMENT_BASE_PATH:/actuator}
+  endpoint:
+    health:
+      show-details: ${MANAGEMENT_HEALTH_DETAILS:always}
+      probes:
+        enabled: ${MANAGEMENT_PROBES_ENABLED:true}
+  health:
+    defaults:
+      enabled: true
+  metrics:
+    tags:
+      application: ${spring.application.name}
+    export:
+      prometheus:
+        enabled: ${PROMETHEUS_ENABLED:true}
+
+server:
+  port: ${SERVER_PORT:8888}
+
+logging:
+  level:
+    root: ${LOG_LEVEL_ROOT:INFO}
+    org.springframework.cloud.gateway: ${LOG_LEVEL_GATEWAY:INFO}
+    org.springframework.web.reactive: ${LOG_LEVEL_REACTIVE:INFO}
+    reactor.netty: ${LOG_LEVEL_NETTY:INFO}
+  pattern:
+    console: ${LOG_PATTERN_CONSOLE:%d{yyyy-MM-dd HH:mm:ss} - %msg%n}
+    file: ${LOG_PATTERN_FILE:%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n}
+  file:
+    name: ${LOG_FILE:/logs/${spring.application.name}.log}

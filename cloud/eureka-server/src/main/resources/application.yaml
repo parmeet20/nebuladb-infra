@@ -1,0 +1,53 @@
+spring:
+  application:
+    name: ${SPRING_APPLICATION_NAME:eureka-server}
+
+server:
+  port: ${SERVER_PORT:8761}
+
+eureka:
+  instance:
+    hostname: ${EUREKA_INSTANCE_HOSTNAME:${HOSTNAME:localhost}}
+  client:
+    register-with-eureka: ${EUREKA_CLIENT_REGISTER:false}
+    fetch-registry: ${EUREKA_CLIENT_FETCH:false}
+    service-url:
+      defaultZone: ${EUREKA_DEFAULT_ZONE:http://${EUREKA_HOSTNAME:localhost}:${SERVER_PORT:8761}/eureka/}
+  server:
+    enable-self-preservation: ${EUREKA_SELF_PRESERVATION:false}
+    eviction-interval-timer-in-ms: ${EUREKA_EVICTION_INTERVAL:10000}
+    wait-time-in-ms-when-sync-empty: ${EUREKA_WAIT_TIME_SYNC_EMPTY:0}
+    peer-node-read-timeout-ms: ${EUREKA_PEER_NODE_READ_TIMEOUT:1500}
+    peer-node-connect-timeout-ms: ${EUREKA_PEER_NODE_CONNECT_TIMEOUT:1000}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: ${MANAGEMENT_ENDPOINTS:health,info,prometheus}
+      base-path: ${MANAGEMENT_BASE_PATH:/actuator}
+  endpoint:
+    health:
+      show-details: ${MANAGEMENT_HEALTH_DETAILS:always}
+      probes:
+        enabled: ${MANAGEMENT_PROBES_ENABLED:true}
+  health:
+    defaults:
+      enabled: true
+  metrics:
+    tags:
+      application: ${spring.application.name}
+    export:
+      prometheus:
+        enabled: ${PROMETHEUS_ENABLED:true}
+
+logging:
+  level:
+    root: ${LOG_LEVEL_ROOT:INFO}
+    com.netflix.eureka: ${LOG_LEVEL_EUREKA:INFO}
+    com.netflix.discovery: ${LOG_LEVEL_DISCOVERY:INFO}
+  pattern:
+    console: ${LOG_PATTERN_CONSOLE:%d{yyyy-MM-dd HH:mm:ss} - %msg%n}
+    file: ${LOG_PATTERN_FILE:%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n}
+  file:
+    name: ${LOG_FILE:/logs/${spring.application.name}.log}

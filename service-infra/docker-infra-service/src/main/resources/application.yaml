@@ -1,0 +1,88 @@
+spring:
+  application:
+    name: ${SPRING_APPLICATION_NAME:docker-infra-service}
+
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      acks: ${KAFKA_PRODUCER_ACKS:all}
+      retries: ${KAFKA_PRODUCER_RETRIES:3}
+      properties:
+        enable.idempotence: ${KAFKA_IDEMPOTENCE:true}
+        delivery.timeout.ms: ${KAFKA_DELIVERY_TIMEOUT:120000}
+        request.timeout.ms: ${KAFKA_REQUEST_TIMEOUT:30000}
+    consumer:
+      group-id: ${KAFKA_CONSUMER_GROUP:docker-infra-service}
+      auto-offset-reset: ${KAFKA_AUTO_OFFSET_RESET:earliest}
+      enable-auto-commit: ${KAFKA_AUTO_COMMIT:false}
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: ${KAFKA_TRUSTED_PACKAGES:io.dev.events}
+        spring.json.use.type.headers: ${KAFKA_USE_TYPE_HEADERS:false}
+    listener:
+      ack-mode: ${KAFKA_LISTENER_ACK_MODE:record}
+      missing-topics-fatal: ${KAFKA_MISSING_TOPICS_FATAL:false}
+
+  docker:
+    host: ${DOCKER_HOST:unix:///var/run/docker.sock}
+    registry: ${DOCKER_REGISTRY:}
+    pull-timeout: ${DOCKER_PULL_TIMEOUT:300000}
+    container:
+      start-timeout: ${DOCKER_CONTAINER_START_TIMEOUT:60000}
+      stop-timeout: ${DOCKER_CONTAINER_STOP_TIMEOUT:30000}
+
+eureka:
+  instance:
+    hostname: ${EUREKA_INSTANCE_HOSTNAME:${HOSTNAME:localhost}}
+    prefer-ip-address: ${EUREKA_PREFER_IP:true}
+    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+    lease-renewal-interval-in-seconds: ${EUREKA_LEASE_RENEWAL:30}
+    lease-expiration-duration-in-seconds: ${EUREKA_LEASE_EXPIRATION:90}
+  client:
+    register-with-eureka: ${EUREKA_REGISTER:true}
+    fetch-registry: ${EUREKA_FETCH:true}
+    service-url:
+      defaultZone: ${EUREKA_DEFAULT_ZONE:http://${EUREKA_HOSTNAME:localhost}:${EUREKA_PORT:8761}/eureka/}
+    registry-fetch-interval-seconds: ${EUREKA_FETCH_INTERVAL:30}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: ${MANAGEMENT_ENDPOINTS:health,info,prometheus}
+      base-path: ${MANAGEMENT_BASE_PATH:/actuator}
+  endpoint:
+    health:
+      show-details: ${MANAGEMENT_HEALTH_DETAILS:always}
+      probes:
+        enabled: ${MANAGEMENT_PROBES_ENABLED:true}
+  health:
+    defaults:
+      enabled: true
+  metrics:
+    tags:
+      application: ${spring.application.name}
+    export:
+      prometheus:
+        enabled: ${PROMETHEUS_ENABLED:true}
+
+server:
+  port: ${SERVER_PORT:8001}
+  compression:
+    enabled: ${SERVER_COMPRESSION:true}
+    mime-types: ${SERVER_COMPRESSION_MIME_TYPES:application/json,application/xml,text/html,text/xml,text/plain,application/javascript,text/css}
+
+logging:
+  level:
+    root: ${LOG_LEVEL_ROOT:INFO}
+    io.dev.dock: ${LOG_LEVEL_APP:DEBUG}
+    org.springframework.kafka: ${LOG_LEVEL_KAFKA:INFO}
+    com.github.dockerjava: ${LOG_LEVEL_DOCKER:WARN}
+  pattern:
+    console: ${LOG_PATTERN_CONSOLE:%d{yyyy-MM-dd HH:mm:ss} - %msg%n}
+    file: ${LOG_PATTERN_FILE:%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n}
+  file:
+    name: ${LOG_FILE:/logs/${spring.application.name}.log}

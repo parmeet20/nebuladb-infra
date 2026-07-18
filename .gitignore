@@ -1,0 +1,99 @@
+# -----------------------------
+# Java / Maven
+# -----------------------------
+target/
+*.class
+*.jar
+*.war
+*.ear
+*.nar
+*.zip
+*.tar.gz
+*.rar
+hs_err_pid*
+replay_pid*
+
+# Maven wrapper
+.mvn/wrapper/maven-wrapper.jar
+
+# -----------------------------
+# IDE / Editors
+# -----------------------------
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+*.launch
+
+# -----------------------------
+# OS generated
+# -----------------------------
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# -----------------------------
+# Logs & temporary files
+# -----------------------------
+*.log
+logs/
+tmp/
+temp/
+*.tmp
+
+# -----------------------------
+# Docker
+# -----------------------------
+.dockerignore
+docker-compose.override.yml
+
+# -----------------------------
+# Local env / secrets
+# -----------------------------
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+*.crt
+
+# -----------------------------
+# Build / CI artefacts
+# -----------------------------
+*.native-image/
+build/
+dist/
+out/
+coverage/
+.nyc_output/
+
+# -----------------------------
+# Test / reports
+# -----------------------------
+surefire-reports/
+failsafe-reports/
+test-results/
+jacoco.exec
+*.ec
+
+# -----------------------------
+# GraalVM native build output
+# -----------------------------
+/target/*-runner
+/target/*-runner.exe
+/target/native-image/
+
+# -----------------------------
+# Misc
+# -----------------------------
+*.orig
+*.bak
+*.patch

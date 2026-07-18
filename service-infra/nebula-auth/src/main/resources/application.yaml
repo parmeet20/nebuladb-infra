@@ -1,0 +1,96 @@
+spring:
+  application:
+    name: ${SPRING_APPLICATION_NAME:nebula-auth}
+
+  datasource:
+    url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/${MYSQL_DATABASE:nebuladb}?createDatabaseIfNotExist=${MYSQL_CREATE_DB:true}&useSSL=${MYSQL_USE_SSL:false}&allowPublicKeyRetrieval=${MYSQL_ALLOW_PUBLIC_KEY:true}&serverTimezone=${MYSQL_TIMEZONE:UTC}
+    username: ${MYSQL_USERNAME:root}
+    password: ${MYSQL_PASSWORD:password}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: ${HIKARI_MAX_POOL_SIZE:10}
+      minimum-idle: ${HIKARI_MIN_IDLE:5}
+      connection-timeout: ${HIKARI_CONNECTION_TIMEOUT:30000}
+      idle-timeout: ${HIKARI_IDLE_TIMEOUT:600000}
+      max-lifetime: ${HIKARI_MAX_LIFETIME:1800000}
+      pool-name: ${HIKARI_POOL_NAME:nebula-auth-pool}
+
+  jpa:
+    hibernate:
+      ddl-auto: ${JPA_DDL_AUTO:update}
+    show-sql: ${JPA_SHOW_SQL:false}
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+        generate_statistics: ${JPA_GENERATE_STATS:false}
+        jdbc:
+          time_zone: ${MYSQL_TIMEZONE:UTC}
+
+  flyway:
+    enabled: ${FLYWAY_ENABLED:false}
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+
+eureka:
+  instance:
+    hostname: ${EUREKA_INSTANCE_HOSTNAME:${HOSTNAME:localhost}}
+    prefer-ip-address: ${EUREKA_PREFER_IP:true}
+    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+    lease-renewal-interval-in-seconds: ${EUREKA_LEASE_RENEWAL:30}
+    lease-expiration-duration-in-seconds: ${EUREKA_LEASE_EXPIRATION:90}
+  client:
+    register-with-eureka: ${EUREKA_REGISTER:true}
+    fetch-registry: ${EUREKA_FETCH:true}
+    service-url:
+      defaultZone: ${EUREKA_DEFAULT_ZONE:http://${EUREKA_HOSTNAME:localhost}:${EUREKA_PORT:8761}/eureka/}
+    registry-fetch-interval-seconds: ${EUREKA_FETCH_INTERVAL:30}
+
+jwt:
+  secret-key: ${JWT_SECRET_KEY:jdsfhudsifnucryewuibcrny8oiqewcruifehmdicohxoej9mucrwe89rn98ewnyrcm98en89nx8rehugfefy8y8herwofehfeoiufhseeeeydguc8oiudasioc}
+  expiration: ${JWT_EXPIRATION:18000000}
+  refresh-expiration: ${JWT_REFRESH_EXPIRATION:604800000}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: ${MANAGEMENT_ENDPOINTS:health,info,prometheus}
+      base-path: ${MANAGEMENT_BASE_PATH:/actuator}
+  endpoint:
+    health:
+      show-details: ${MANAGEMENT_HEALTH_DETAILS:always}
+      probes:
+        enabled: ${MANAGEMENT_PROBES_ENABLED:true}
+  health:
+    db:
+      enabled: true
+    defaults:
+      enabled: true
+  metrics:
+    tags:
+      application: ${spring.application.name}
+    export:
+      prometheus:
+        enabled: ${PROMETHEUS_ENABLED:true}
+
+server:
+  port: ${SERVER_PORT:8002}
+  servlet:
+    context-path: ${SERVER_CONTEXT_PATH:/}
+  compression:
+    enabled: ${SERVER_COMPRESSION:true}
+    mime-types: ${SERVER_COMPRESSION_MIME_TYPES:application/json,application/xml,text/html,text/xml,text/plain,application/javascript,text/css}
+
+logging:
+  level:
+    root: ${LOG_LEVEL_ROOT:INFO}
+    io.securityapp.nebula_auth: ${LOG_LEVEL_APP:DEBUG}
+    org.springframework.security: ${LOG_LEVEL_SECURITY:INFO}
+    org.hibernate.SQL: ${LOG_LEVEL_SQL:WARN}
+  pattern:
+    console: ${LOG_PATTERN_CONSOLE:%d{yyyy-MM-dd HH:mm:ss} - %msg%n}
+    file: ${LOG_PATTERN_FILE:%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n}
+  file:
+    name: ${LOG_FILE:/logs/${spring.application.name}.log}
