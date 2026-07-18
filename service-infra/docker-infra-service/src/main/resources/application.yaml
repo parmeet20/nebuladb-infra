@@ -2,6 +2,15 @@ spring:
   application:
     name: ${SPRING_APPLICATION_NAME:docker-infra-service}
 
+  # GraalVM native image: disable features incompatible with AOT code generation
+  cloud:
+    refresh:
+      enabled: false
+    compatibility-verifier:
+      enabled: false
+  main:
+    cloud-platform: none
+
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
     producer:
