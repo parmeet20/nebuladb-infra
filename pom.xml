@@ -82,24 +82,6 @@
                 <plugin>
                     <groupId>org.graalvm.buildtools</groupId>
                     <artifactId>native-maven-plugin</artifactId>
-                    <configuration>
-                        <!--
-                            Disable the built-in reachability metadata repository.
-                            native-maven-plugin 1.1.x bundles a metadata schema that no
-                            current GraalVM Community image supports, causing a hard failure
-                            before native-image is even invoked.
-                            Spring Boot AOT (process-aot) already generates all the reflection
-                            configuration needed for Spring-managed beans.
-                            Manual hints for third-party libs go in:
-                              src/main/resources/META-INF/native-image/<groupId>/<artifactId>/
-                        -->
-                        <metadataRepository>
-                            <enabled>false</enabled>
-                        </metadataRepository>
-                        <buildArgs>
-                            <buildArg>--initialize-at-build-time=org.slf4j,ch.qos.logback</buildArg>
-                        </buildArgs>
-                    </configuration>
                 </plugin>
 
             </plugins>

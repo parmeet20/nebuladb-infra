@@ -1,15 +1,10 @@
-# ---------- Stage 1 : Build Native Image ----------
-# GraalVM Community 21 LTS — native-image on PATH, compatible with maven.compiler.release=21
-FROM ghcr.io/graalvm/native-image-community:21 AS builder
-
-# Install Maven (not bundled in the GraalVM image)
-RUN microdnf install -y maven findutils && microdnf clean all
+# ---------- Stage 1 : Build JAR ----------
+FROM maven:3.9-eclipse-temurin-21-alpine AS builder
 
 WORKDIR /workspace
 
 ARG MODULE_PARENT
 ARG MODULE_NAME
-ARG ARTIFACT_NAME
 
 # Copy complete repository
 COPY . .
@@ -19,18 +14,19 @@ COPY . .
 RUN --mount=type=cache,target=/root/.m2/repository \
     mvn -pl ${MODULE_PARENT}/${MODULE_NAME} \
         -am \
-        -Pnative \
         -DskipTests \
         --no-transfer-progress \
         clean package && \
-    # Copy the binary out of the module target so Stage 2 can find it
-    cp /workspace/${MODULE_PARENT}/${MODULE_NAME}/target/${ARTIFACT_NAME} /artifact
+    # Copy the compiled fat JAR out of target directory to a unified location
+    cp /workspace/${MODULE_PARENT}/${MODULE_NAME}/target/*-SNAPSHOT.jar /app.jar
 
 # ---------- Stage 2 : Runtime ----------
-FROM debian:12-slim
+FROM eclipse-temurin:21-jre-alpine
 
 WORKDIR /app
 
-COPY --from=builder /artifact /app/app
+# Copy the fat JAR from the builder stage
+COPY --from=builder /app.jar /app/app.jar
 
-ENTRYPOINT ["/app/app"]
+# Standard JVM entry point
+ENTRYPOINT ["java", "-jar", "/app/app.jar"]

@@ -2,15 +2,6 @@ spring:
   application:
     name: ${SPRING_APPLICATION_NAME:eureka-server}
 
-  # GraalVM native image: disable features incompatible with AOT code generation
-  cloud:
-    refresh:
-      enabled: false
-    compatibility-verifier:
-      enabled: false
-  main:
-    cloud-platform: none
-
 server:
   port: ${SERVER_PORT:8761}
 

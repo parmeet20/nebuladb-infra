@@ -2,15 +2,6 @@ spring:
   application:
     name: ${SPRING_APPLICATION_NAME:project-service}
 
-  # GraalVM native image: disable features incompatible with AOT code generation
-  cloud:
-    refresh:
-      enabled: false
-    compatibility-verifier:
-      enabled: false
-  main:
-    cloud-platform: none
-
   datasource:
     url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/${MYSQL_DATABASE:nebuladb}?createDatabaseIfNotExist=${MYSQL_CREATE_DB:true}&useSSL=${MYSQL_USE_SSL:false}&allowPublicKeyRetrieval=${MYSQL_ALLOW_PUBLIC_KEY:true}&serverTimezone=${MYSQL_TIMEZONE:UTC}
     username: ${MYSQL_USERNAME:root}

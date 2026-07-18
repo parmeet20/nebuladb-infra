@@ -3,11 +3,6 @@ spring:
     name: ${SPRING_APPLICATION_NAME:api-gateway}
 
   cloud:
-    # GraalVM native image: disable features incompatible with AOT code generation
-    refresh:
-      enabled: false
-    compatibility-verifier:
-      enabled: false
     gateway:
       server:
         webflux:
@@ -53,7 +48,6 @@ spring:
 
   main:
     web-application-type: reactive
-    cloud-platform: none
 
 jwt:
   secret-key: ${JWT_SECRET_KEY:jdsfhudsifnucryewuibcrny8oiqewcruifehmdicohxoej9mucrwe89rn98ewnyrcm98en89nx8rehugfefy8y8herwofehfeoiufhseeeeydguc8oiudasioc}

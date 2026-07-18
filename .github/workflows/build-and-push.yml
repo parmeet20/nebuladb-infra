@@ -1,5 +1,5 @@
 # .github/workflows/build-and-push.yml
-name: Build & Push Native Images
+name: Build & Push JVM Images
 
 on:
   push:
@@ -14,7 +14,7 @@ env:
   DOCKER_BUILDKIT: "1"
 
 jobs:
-  build-native:
+  build-jvm:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -71,7 +71,7 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build & push native image
+      - name: Build & push JVM image
         uses: docker/build-push-action@v5.4.0
         with:
           context: .
