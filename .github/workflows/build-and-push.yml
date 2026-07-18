@@ -21,23 +21,18 @@ jobs:
         include:
           - service: nebula-auth
             context: service-infra/nebula-auth
-            dockerfile: Dockerfile.native
             port: 8002
           - service: project-service
             context: service-infra/project-service
-            dockerfile: Dockerfile.native
             port: 8000
           - service: docker-infra-service
             context: service-infra/docker-infra-service
-            dockerfile: Dockerfile.native
             port: 8001
           - service: eureka-server
             context: cloud/eureka-server
-            dockerfile: Dockerfile.native
             port: 8761
           - service: api-gateway
             context: cloud/api-gateway
-            dockerfile: Dockerfile.native
             port: 8888
 
     permissions:
@@ -53,7 +48,7 @@ jobs:
           echo "=== Listing ${{ matrix.context }} ==="
           ls -la ${{ matrix.context }}/
           echo "=== Dockerfile.native content (first 5 lines) ==="
-          head -n 5 ${{ matrix.context }}/${{ matrix.dockerfile }}
+          head -n 5 ${{ matrix.context }}/Dockerfile.native
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3.2.0
@@ -71,7 +66,7 @@ jobs:
         uses: docker/build-push-action@v5.4.0
         with:
           context: ${{ matrix.context }}
-          file: ${{ matrix.dockerfile }}
+          file: Dockerfile.native
           push: true
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_PREFIX }}/${{ matrix.service }}:latest
