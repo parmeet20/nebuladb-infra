@@ -21,7 +21,6 @@ RUN --mount=type=cache,target=/root/.m2/repository \
         -am \
         -Pnative \
         -DskipTests \
-        -DbuildArgs="--initialize-at-build-time=org.slf4j,ch.qos.logback" \
         --no-transfer-progress \
         clean package && \
     # Copy the binary out of the module target so Stage 2 can find it

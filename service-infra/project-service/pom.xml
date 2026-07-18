@@ -93,6 +93,12 @@
 				<artifactId>native-maven-plugin</artifactId>
 				<configuration>
 					<mainClass>io.dev.project_service.ProjectServiceApplication</mainClass>
+					<metadataRepository>
+						<enabled>false</enabled>
+					</metadataRepository>
+					<buildArgs>
+						<buildArg>--initialize-at-build-time=org.slf4j,ch.qos.logback</buildArg>
+					</buildArgs>
 				</configuration>
 			</plugin>
 			<plugin>
