@@ -8,9 +8,6 @@ WORKDIR /workspace
 ARG MODULE_PARENT
 ARG MODULE_NAME
 ARG ARTIFACT_NAME
-ARG MAVEN_OPTS
-
-ENV MAVEN_OPTS=${MAVEN_OPTS}
 
 # Copy complete repository
 COPY . .
@@ -20,9 +17,9 @@ RUN mvn \
     -pl ${MODULE_PARENT}/${MODULE_NAME} \
     -am \
     -Pnative \
-    -DskipTests \
     -DskipNativeBuild=false \
-    clean native:compile
+    -DskipTests \
+    clean package
 
 # ---------- Stage 2 : Runtime ----------
 FROM gcr.io/distroless/base-debian12
