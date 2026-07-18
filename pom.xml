@@ -27,7 +27,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <spring-cloud.version>2025.1.2</spring-cloud.version>
-        <skipNativeBuild>true</skipNativeBuild>
+        <skipNativeBuild>false</skipNativeBuild>
     </properties>
 
 
