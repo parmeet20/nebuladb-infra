@@ -1,6 +1,6 @@
 # ---------- Stage 1 : Build Native Image ----------
-# GraalVM Community 21 (LTS) — includes native-image on PATH
-FROM ghcr.io/graalvm/native-image-community:21 AS builder
+# GraalVM Community 23 — supports reachability metadata schema v2 required by native-maven-plugin 1.1.1+
+FROM ghcr.io/graalvm/native-image-community:23 AS builder
 
 # Install Maven (not bundled in the GraalVM image)
 RUN microdnf install -y maven findutils && microdnf clean all
