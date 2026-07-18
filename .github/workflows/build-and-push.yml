@@ -9,7 +9,7 @@ on:
 
 env:
   REGISTRY: docker.io
-  IMAGE_NAME_PREFIX: ${{ github.repository_owner }}
+  IMAGE_NAME_PREFIX: ${{ secrets.DOCKERHUB_USERNAME }}
   # Enable Docker BuildKit so --mount=type=cache works in Dockerfile
   DOCKER_BUILDKIT: "1"
 
