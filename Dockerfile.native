@@ -1,0 +1,40 @@
+# ---------- Stage 1 : Build Native Image ----------
+FROM ghcr.io/graalvm/native-image-community:25 AS builder
+
+RUN microdnf install -y maven git findutils && microdnf clean all
+
+WORKDIR /workspace
+
+ARG MODULE_PARENT
+ARG MODULE_NAME
+ARG ARTIFACT_NAME
+ARG MAVEN_OPTS
+
+ENV MAVEN_OPTS=${MAVEN_OPTS}
+
+# Copy complete repository
+COPY . .
+
+# Build only the requested module and its dependencies
+RUN mvn \
+    -pl ${MODULE_PARENT}/${MODULE_NAME} \
+    -am \
+    -Pnative \
+    -DskipTests \
+    -DskipNativeBuild=false \
+    clean native:compile
+
+# ---------- Stage 2 : Runtime ----------
+FROM gcr.io/distroless/base-debian12
+
+WORKDIR /app
+
+ARG MODULE_PARENT
+ARG MODULE_NAME
+ARG ARTIFACT_NAME
+
+COPY --from=builder \
+    /workspace/${MODULE_PARENT}/${MODULE_NAME}/target/${ARTIFACT_NAME} \
+    /app/app
+
+ENTRYPOINT ["/app/app"]

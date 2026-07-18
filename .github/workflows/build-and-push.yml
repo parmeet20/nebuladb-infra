@@ -20,24 +20,29 @@ jobs:
       matrix:
         include:
           - service: nebula-auth
-            context: service-infra/nebula-auth
-            artifactId: nebula-auth-service
+            module_parent: service-infra
+            module_name: nebula-auth
+            artifact_name: nebula-auth-service
             port: 8002
           - service: project-service
-            context: service-infra/project-service
-            artifactId: project-service
+            module_parent: service-infra
+            module_name: project-service
+            artifact_name: project-service
             port: 8000
           - service: docker-infra-service
-            context: service-infra/docker-infra-service
-            artifactId: docker-infra-service
+            module_parent: service-infra
+            module_name: docker-infra-service
+            artifact_name: docker-infra-service
             port: 8001
           - service: eureka-server
-            context: cloud/eureka-server
-            artifactId: eureka-server
+            module_parent: cloud
+            module_name: eureka-server
+            artifact_name: eureka-server
             port: 8761
           - service: api-gateway
-            context: cloud/api-gateway
-            artifactId: api-gateway
+            module_parent: cloud
+            module_name: api-gateway
+            artifact_name: api-gateway
             port: 8888
 
     permissions:
@@ -48,12 +53,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4.2.2
 
-      - name: Show Dockerfile in context
+      - name: Verify Dockerfile.native
         run: |
-          echo "=== Listing ${{ matrix.context }} ==="
-          ls -la ${{ matrix.context }}/
-          echo "=== First 5 lines of Dockerfile ==="
-          head -n 5 ${{ matrix.context }}/Dockerfile
+          ls -la
+          test -f Dockerfile.native
+
+      - name: Cache Maven dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-m2-
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3.2.0
@@ -71,12 +82,15 @@ jobs:
         uses: docker/build-push-action@v5.4.0
         with:
           context: .
-          file: ${{ matrix.context }}/Dockerfile
+          file: ./Dockerfile.native
           push: true
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_PREFIX }}/${{ matrix.service }}:latest
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_PREFIX }}/${{ matrix.service }}:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
           build-args: |
-            ARTIFACT_ID=${{ matrix.artifactId }}
+            MODULE_PARENT=${{ matrix.module_parent }}
+            MODULE_NAME=${{ matrix.module_name }}
+            ARTIFACT_NAME=${{ matrix.artifact_name }}
             MAVEN_OPTS=-Dmaven.repo.local=/root/.m2/repository
