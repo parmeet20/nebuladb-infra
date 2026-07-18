@@ -96,6 +96,9 @@
                         <metadataRepository>
                             <enabled>false</enabled>
                         </metadataRepository>
+                        <buildArgs>
+                            <buildArg>--initialize-at-build-time=org.slf4j,ch.qos.logback</buildArg>
+                        </buildArgs>
                     </configuration>
                 </plugin>
 
