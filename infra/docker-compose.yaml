@@ -53,6 +53,73 @@ services:
       retries: 10
       start_period: 30s
 
+  nebula-auth:
+    image: param9999/nebula-auth:latest
+    container_name: nebula-auth
+    env_file:
+      - .env
+    environment:
+      SPRING_APPLICATION_NAME: nebula-auth
+      MYSQL_HOST: mysql
+      MYSQL_PORT: "3306"
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USERNAME: ${MYSQL_USERNAME}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      EUREKA_HOSTNAME: eureka-server
+      EUREKA_PORT: "8761"
+      EUREKA_DEFAULT_ZONE: http://eureka-server:8761/eureka/
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      SERVER_PORT: "8002"
+    ports:
+      - "8002:8002"
+    networks:
+      - nebula-network
+    depends_on:
+      mysql:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8002/actuator/health/liveness"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  project-service:
+    image: param9999/project-service:latest
+    container_name: nebula-project-service
+    env_file:
+      - .env
+    environment:
+      SPRING_APPLICATION_NAME: project-service
+      MYSQL_HOST: mysql
+      MYSQL_PORT: "3306"
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USERNAME: ${MYSQL_USERNAME}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      EUREKA_HOSTNAME: eureka-server
+      EUREKA_PORT: "8761"
+      EUREKA_DEFAULT_ZONE: http://eureka-server:8761/eureka/
+      SERVER_PORT: "8000"
+    ports:
+      - "8000:8000"
+    networks:
+      - nebula-network
+    depends_on:
+      mysql:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+      eureka-server:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8000/actuator/health/liveness"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
 
   docker-infra-service:
     image: param9999/docker-infra-service:latest
@@ -104,10 +171,10 @@ services:
     depends_on:
       eureka-server:
         condition: service_healthy
-#      nebula-auth:
-#        condition: service_healthy
-#      project-service:
-#        condition: service_healthy
+      nebula-auth:
+        condition: service_healthy
+      project-service:
+        condition: service_healthy
       docker-infra-service:
         condition: service_healthy
     healthcheck:
@@ -118,74 +185,3 @@ services:
       start_period: 30s
 
 volumes: {}
-#  nebula-auth:
-#    build:
-#      context: ../service-infra/nebula-auth
-#      dockerfile: Dockerfile
-#    container_name: nebula-auth
-#    env_file:
-#      - .env
-#    environment:
-#      SPRING_APPLICATION_NAME: nebula-auth
-#      MYSQL_HOST: mysql
-#      MYSQL_PORT: "3306"
-#      MYSQL_DATABASE: ${MYSQL_DATABASE}
-#      MYSQL_USERNAME: ${MYSQL_USERNAME}
-#      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-#      EUREKA_HOSTNAME: eureka-server
-#      EUREKA_PORT: "8761"
-#      EUREKA_DEFAULT_ZONE: http://eureka-server:8761/eureka/
-#      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
-#      SERVER_PORT: "8002"
-#    ports:
-#      - "8002:8002"
-#    networks:
-#      - nebula-network
-#    depends_on:
-#      mysql:
-#        condition: service_healthy
-#      eureka-server:
-#        condition: service_healthy
-#    healthcheck:
-#      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8002/actuator/health/liveness"]
-#      interval: 10s
-#      timeout: 5s
-#      retries: 10
-#      start_period: 30s
-#
-#  project-service:
-#    build:
-#      context: ../service-infra/project-service
-#      dockerfile: Dockerfile
-#    container_name: nebula-project-service
-#    env_file:
-#      - .env
-#    environment:
-#      SPRING_APPLICATION_NAME: project-service
-#      MYSQL_HOST: mysql
-#      MYSQL_PORT: "3306"
-#      MYSQL_DATABASE: ${MYSQL_DATABASE}
-#      MYSQL_USERNAME: ${MYSQL_USERNAME}
-#      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-#      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
-#      EUREKA_HOSTNAME: eureka-server
-#      EUREKA_PORT: "8761"
-#      EUREKA_DEFAULT_ZONE: http://eureka-server:8761/eureka/
-#      SERVER_PORT: "8000"
-#    ports:
-#      - "8000:8000"
-#    networks:
-#      - nebula-network
-#    depends_on:
-#      mysql:
-#        condition: service_healthy
-#      kafka:
-#        condition: service_started
-#      eureka-server:
-#        condition: service_healthy
-#    healthcheck:
-#      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8000/actuator/health/liveness"]
-#      interval: 10s
-#      timeout: 5s
-#      retries: 10
-#      start_period: 30s
