@@ -3,8 +3,22 @@ name: Build & Push JVM Images
 on:
   push:
     branches: [ main ]
+    paths:
+      - 'service-infra/**'
+      - 'cloud/**'
+      - 'commonlib/**'
+      - 'pom.xml'
+      - 'Dockerfile.native'
+      - '.github/workflows/build-and-push.yml'
   pull_request:
     branches: [ main ]
+    paths:
+      - 'service-infra/**'
+      - 'cloud/**'
+      - 'commonlib/**'
+      - 'pom.xml'
+      - 'Dockerfile.native'
+      - '.github/workflows/build-and-push.yml'
 
 env:
   REGISTRY: docker.io
