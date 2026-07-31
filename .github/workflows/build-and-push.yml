@@ -1,4 +1,3 @@
-# .github/workflows/build-and-push.yml
 name: Build & Push JVM Images
 
 on:
@@ -10,7 +9,6 @@ on:
 env:
   REGISTRY: docker.io
   IMAGE_NAME_PREFIX: ${{ secrets.DOCKERHUB_USERNAME }}
-  # Enable Docker BuildKit so --mount=type=cache works in Dockerfile
   DOCKER_BUILDKIT: "1"
 
 jobs:

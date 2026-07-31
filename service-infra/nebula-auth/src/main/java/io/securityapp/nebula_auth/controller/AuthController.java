@@ -2,15 +2,15 @@ package io.securityapp.nebula_auth.controller;
 
 import io.securityapp.nebula_auth.dtos.LoginRequestDto;
 import io.securityapp.nebula_auth.dtos.LoginResponseDto;
+import io.securityapp.nebula_auth.dtos.MeResponseDto;
 import io.securityapp.nebula_auth.dtos.SignupRequestDto;
 import io.securityapp.nebula_auth.dtos.SignupResponseDto;
 import io.securityapp.nebula_auth.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -28,4 +28,9 @@ public class AuthController {
         return ResponseEntity.ok(authService.login(dto));
     }
 
+    @GetMapping("/me")
+    public ResponseEntity<MeResponseDto> meHandler(@RequestHeader("Authorization") String authHeader){
+        String token = authHeader.replace("Bearer ", "");
+        return ResponseEntity.ok(authService.getMe(token));
+    }
 }

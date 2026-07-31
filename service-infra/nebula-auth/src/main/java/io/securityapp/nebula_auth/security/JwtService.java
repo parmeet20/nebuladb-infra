@@ -26,6 +26,7 @@ public class JwtService {
                 .builder()
                 .subject(user.getUsername())
                 .claim("userid",user.getId())
+                .claim("email", user.getEmail())
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis()+1000*60*60*5))
                 .signWith(getSecretKey())
@@ -40,5 +41,14 @@ public class JwtService {
                 .parseSignedClaims(token)
                 .getPayload();
         return payload.getSubject();
+    }
+
+    public Claims getAllClaimsFromToken(String token) {
+        return Jwts
+                .parser()
+                .verifyWith(getSecretKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
     }
 }

@@ -1,7 +1,9 @@
 package io.securityapp.nebula_auth.service;
 
+import io.jsonwebtoken.Claims;
 import io.securityapp.nebula_auth.dtos.LoginRequestDto;
 import io.securityapp.nebula_auth.dtos.LoginResponseDto;
+import io.securityapp.nebula_auth.dtos.MeResponseDto;
 import io.securityapp.nebula_auth.dtos.SignupRequestDto;
 import io.securityapp.nebula_auth.dtos.SignupResponseDto;
 import io.securityapp.nebula_auth.entity.User;
@@ -42,4 +44,11 @@ public class AuthService {
         return new LoginResponseDto(token);
     }
 
+    public MeResponseDto getMe(String token) {
+        Claims claims = jwtService.getAllClaimsFromToken(token);
+        String username = claims.getSubject();
+        String userId = claims.get("userid", String.class);
+        String email = claims.get("email", String.class);
+        return new MeResponseDto(username, userId, email);
+    }
 }
