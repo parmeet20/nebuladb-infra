@@ -5,7 +5,7 @@ A microservices-based infrastructure management platform built with Spring Boot,
 ![Build Status](https://img.shields.io/github/actions/workflow/status/parme/nebula-db-microservices/build-and-push.yml?branch=main)
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 ![Java](https://img.shields.io/badge/Java-26-ED8B00?logo=openjdk&logoColor=white)
-![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.3-6DB33F?logo=spring&logoColor=white)
+![Spring Boot](https://img.shields.io/badge/Spring_Boot-4.1-6DB33F?logo=spring&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white)
 ![Kafka](https://img.shields.io/badge/Apache_Kafka-231F20?logo=apache-kafka&logoColor=white)
 
@@ -41,36 +41,68 @@ A microservices-based infrastructure management platform built with Spring Boot,
 ## Architecture
 
 ```mermaid
-graph TD
-    A[Client Applications] --> B[API Gateway]
-    B --> C[Service Discovery (Eureka)]
-    C --> D[Auth Service]
-    C --> E[Project Service]
-    C --> F[Docker Infra Service]
-    C --> G[Eureka Server]
-    D --> H[(MySQL Database)]
-    E --> H
-    F --> H
-    E -->|Kafka Events| F
-    F -->|Docker Events| E
-    style A fill:#f9f,stroke:#333
-    style B fill:#bbf,stroke:#333
-    style C fill:#bfb,stroke:#333
-    style D,E,F,G fill:#dfd,stroke:#333
-    H:# C4 (infrastructure)
-    subgraph Infrastructure [Infrastructure Layer]
-        direction TB
-        H[(MySQL Database)]
-        I[(Kafka Cluster)]
-        style H fill#f96,stroke:333
-        style I fill#9f6,stroke:333
-    end
+flowchart TB
 
-    E --> I
-    F --> I
+%% Client
+A["💻 Client Applications"]
 
+%% Platform
+B["🌐 API Gateway"]
+
+%% Service Discovery
+C["📡 Eureka Server"]
+
+%% Microservices
+subgraph SERVICES["Microservices"]
+    D["🔐 Auth Service"]
+    E["📁 Project Service"]
+    F["🐳 Docker Infra Service"]
+end
+
+%% Infrastructure
+subgraph INFRA["Infrastructure"]
+    H[("🗄️ MySQL Database")]
+    I[("📨 Kafka Cluster")]
+end
+
+%% Requests
+A --> B
+
+%% Service Discovery
+B -. Discovers Services .-> C
+D -. Registers .-> C
+E -. Registers .-> C
+F -. Registers .-> C
+
+%% Service Calls
+B --> D
+B --> E
+B --> F
+
+%% Persistence
+D --> H
+E --> H
+F --> H
+
+%% Events
+E -- Kafka Events --> I
+F -- Docker Events --> I
+
+%% Styling
+classDef client fill:#EEF4FF,stroke:#4F7DFF,stroke-width:2px;
+classDef gateway fill:#E0F2FE,stroke:#0284C7,stroke-width:2px;
+classDef service fill:#ECFDF5,stroke:#10B981,stroke-width:2px;
+classDef infra fill:#FFF7ED,stroke:#F97316,stroke-width:2px;
+classDef discovery fill:#FEF3C7,stroke:#F59E0B,stroke-width:2px;
+
+class A client;
+class B gateway;
+class C discovery;
+class D,E,F service;
+class H,I infra;
+
+linkStyle default stroke:#94A3B8,stroke-width:2px;
 ```
-
 ### Services Overview
 
 | Service | Port | Description |
