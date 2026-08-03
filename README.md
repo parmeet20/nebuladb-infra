@@ -2,7 +2,6 @@
 
 A microservices-based infrastructure management platform built with Spring Boot, Kafka, and Docker. Nebula DB provides a scalable and secure system for managing infrastructure resources, user authentication, and project governance.
 
-![Build Status](https://img.shields.io/github/actions/workflow/status/parme/nebula-db-microservices/build-and-push.yml?branch=main)
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 ![Java](https://img.shields.io/badge/Java-26-ED8B00?logo=openjdk&logoColor=white)
 ![Spring Boot](https://img.shields.io/badge/Spring_Boot-4.1-6DB33F?logo=spring&logoColor=white)
